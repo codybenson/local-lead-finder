@@ -1,5 +1,10 @@
 # app.py
-import os, time, requests, pandas as pd, streamlit as st, folium
+import os
+import time
+import requests
+import pandas as pd
+import streamlit as st
+import folium
 from streamlit_folium import st_folium
 
 API_KEY = st.secrets["GCP_API_KEY"]  # loaded from Streamlit secrets
