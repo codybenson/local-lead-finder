@@ -32,9 +32,9 @@ address   = st.text_input("Center address", "Commerce, TX")
 radius_mi = st.slider("Radius (miles)", 1, 50, 10)
 keyword   = st.text_input("Keyword", "")
 divisions = st.number_input(
-    "Grid divisions per axis",
+    "Search Size",
     min_value=1, max_value=4, value=2,
-    help="1→60 max, 2→4×60, 3→9×60 searches"
+    help="1: Max 60, 2: Max 120, 3: Max 180"
 )
 
 # — Choose display mode
