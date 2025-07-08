@@ -25,12 +25,12 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.title("Local Lead Finder (β)")
+st.title("Local Lead Finder")
 
 # — Inputs
 address   = st.text_input("Center address", "Commerce, TX")
 radius_mi = st.slider("Radius (miles)", 1, 50, 10)
-keyword   = st.text_input("Keyword (blank=all)", "")
+keyword   = st.text_input("Keyword", "")
 divisions = st.number_input(
     "Grid divisions per axis",
     min_value=1, max_value=4, value=2,
