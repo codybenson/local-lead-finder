@@ -15,7 +15,7 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"
 )
-st.title("Local Lead Finder (β)")
+st.title("Local Lead Finder")
 
 # — Inputs
 address   = st.text_input("Center address", "Commerce, TX")
