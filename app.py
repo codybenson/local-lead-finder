@@ -19,8 +19,8 @@ st.title("Local Lead Finder")
 
 # — Inputs
 address   = st.text_input("Center address", "Commerce, TX")
-radius_mi = st.slider("Radius (miles)", 1, 30, 10)
-keyword   = st.text_input("Keyword (blank = all)", "")
+radius_mi = st.slider("Radius (miles)", 1, 50, 10)
+keyword   = st.text_input("Keyword", "")
 
 if st.button("Search"):
     # 1) Geocode the center
