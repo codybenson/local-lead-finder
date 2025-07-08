@@ -1,3 +1,7 @@
+import streamlit as st
+
+st.write("🔑 Secrets available:", st.secrets.keys())
+
 # app.py
 import os
 import time
