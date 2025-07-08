@@ -3,32 +3,34 @@ import time
 import requests
 import pandas as pd
 import streamlit as st
-import folium
-from streamlit_folium import st_folium
 
-# show an error if the secret is missing
+# — check for secret
 if "GCP_API_KEY" not in st.secrets:
-    st.error("⚠️ Please add GCP_API_KEY under Settings → Secrets in Streamlit Cloud.")
+    st.error("⚠️ Please add GCP_API_KEY in Settings → Secrets")
     st.stop()
 API_KEY = st.secrets["GCP_API_KEY"]
 
-st.set_page_config(page_title="Local Lead Finder", layout="wide")
-st.title("Local Lead Finder")
+st.set_page_config(
+    page_title="Local Lead Finder",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+st.title("Local Lead Finder (β)")
 
-# ----- Inputs -----
+# — Inputs
 address   = st.text_input("Center address", "Commerce, TX")
 radius_mi = st.slider("Radius (miles)", 1, 30, 10)
 keyword   = st.text_input("Keyword (blank = all)", "")
 
 if st.button("Search"):
-    # 1) Geocode
+    # 1) Geocode the center
     geo = requests.get(
         "https://maps.googleapis.com/maps/api/geocode/json",
         params={"address": address, "key": API_KEY}
     ).json()["results"][0]["geometry"]["location"]
     lat, lng = geo["lat"], geo["lng"]
 
-    # 2) Nearby Search (with pagination)
+    # 2) Nearby search (with pagination)
     rows, token = [], ""
     while True:
         resp = requests.get(
@@ -47,39 +49,28 @@ if st.button("Search"):
             break
         time.sleep(2)
 
-    # 3) Fetch details & build DataFrame
+    # 3) Pull details
     leads = []
     for p in rows:
         det = requests.get(
             "https://maps.googleapis.com/maps/api/place/details/json",
             params={
                 "place_id": p["place_id"],
-                "fields": "name,formatted_address,formatted_phone_number,website,geometry",
+                "fields": "name,formatted_address,formatted_phone_number,website",
                 "key": API_KEY
             }
         ).json().get("result", {})
         leads.append({
-            "Name": det.get("name", ""),
-            "Address": det.get("formatted_address", ""),
-            "Phone": det.get("formatted_phone_number", ""),
-            "Website": det.get("website", ""),
-            "No Website?": not bool(det.get("website")),
-            "Lat": det.get("geometry", {}).get("location", {}).get("lat"),
-            "Lng": det.get("geometry", {}).get("location", {}).get("lng"),
+            "Name": det.get("name",""),
+            "Address": det.get("formatted_address",""),
+            "Phone": det.get("formatted_phone_number",""),
+            "Website": det.get("website",""),
+            "No Website?": "✅" if not det.get("website") else ""
         })
 
+    # 4) Show results
     df = pd.DataFrame(leads)
     st.success(f"Found {len(df)} businesses")
-    st.download_button("⬇️ Download CSV", df.to_csv(index=False), "leads.csv", "text/csv")
+    st.download_button("⬇️ Download CSV", df.to_csv(index=False),
+                       "leads.csv", "text/csv")
     st.dataframe(df, use_container_width=True)
-
-    # 4) Map
-    fmap = folium.Map(location=[lat, lng], zoom_start=12)
-    for row in leads:
-        color = "red" if not row["Website"] else "green"
-        folium.CircleMarker(
-            [ row["Lat"], row["Lng"] ],
-            radius=6, color=color, fill=True,
-            tooltip=f"{row['Name']}\n{row['Website'] or '—'}"
-        ).add_to(fmap)
-    st_folium(fmap, height=550)
