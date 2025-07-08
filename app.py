@@ -10,11 +10,11 @@ from streamlit_folium import st_folium
 API_KEY = st.secrets["GCP_API_KEY"]  # loaded from Streamlit secrets
 
 st.set_page_config(page_title="Local Lead Finder", layout="wide")
-st.title("Local Lead Finder (β)")
+st.title("Local Lead Finder")
 
 # ----- Inputs -----
 address   = st.text_input("Center address", "Commerce, TX")
-radius_mi = st.slider("Radius (miles)", 1, 30, 10)
+radius_mi = st.slider("Radius (miles)", 1, 50, 10)
 keyword   = st.text_input("Keyword (blank = all)", "")
 
 if st.button("Search"):
