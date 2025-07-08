@@ -1,0 +1,6 @@
+[theme]
+primaryColor = "#DDA15E"           # Harvest Gold accent
+backgroundColor = "#FEFAE0"        # Canvas Cream background
+secondaryBackgroundColor = "#ECE9E5"  # Light neutral for sidebar
+textColor = "#283618"              # Evergreen text
+font = "sans serif"
