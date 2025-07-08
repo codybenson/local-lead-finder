@@ -13,7 +13,7 @@ if "GCP_API_KEY" not in st.secrets:
 API_KEY = st.secrets["GCP_API_KEY"]
 
 st.set_page_config(page_title="Local Lead Finder", layout="wide")
-st.title("Local Lead Finder (β)")
+st.title("Local Lead Finder")
 
 # ----- Inputs -----
 address   = st.text_input("Center address", "Commerce, TX")
