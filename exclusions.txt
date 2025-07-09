@@ -1,1 +1,70 @@
-walmart.com
+name,domain
+Walmart,walmart.com
+Sam's Club,samsclub.com
+Target,target.com
+Costco,costco.com
+The Home Depot,homedepot.com
+Lowe's,lowes.com
+Best Buy,bestbuy.com
+Kohl's,kohls.com
+TJ Maxx,tjmaxx.com
+Marshalls,marshalls.com
+Ross Dress for Less,rossstores.com
+Burlington,burlington.com
+Big Lots,biglots.com
+Dollar General,dollargeneral.com
+Dollar Tree,dollartree.com
+Family Dollar,familydollar.com
+Aldi,aldi.us
+H-E-B,heb.com
+Brookshire Grocery,brookshires.com
+Kroger,kroger.com
+Albertsons,albertsons.com
+Academy Sports + Outdoors,academy.com
+Tractor Supply Co.,tractorsupply.com
+AutoZone,autozone.com
+O'Reilly Auto Parts,oreillyauto.com
+PetSmart,petsmart.com
+Petco,petco.com
+Michaels,michaels.com
+Hobby Lobby,hobbylobby.com
+JOANN,joann.com
+HomeGoods,homegoods.com
+Bed Bath & Beyond,bedbathandbeyond.com
+McDonald's,mcdonalds.com
+Burger King,burgerking.com
+Wendy's,wendys.com
+Taco Bell,tacobell.com
+Pizza Hut,pizzahut.com
+Domino's Pizza,dominos.com
+Papa John's,papajohns.com
+Little Caesars,littlecaesars.com
+Cici's Pizza,cicispizza.com
+Subway,subway.com
+Chick-fil-A,chick-fil-a.com
+KFC,kfc.com
+Popeyes,popeyes.com
+Starbucks,starbucks.com
+Dunkin',dunkinathome.com
+Dairy Queen,dairyqueen.com
+Sonic Drive-In,sonicdrivein.com
+Whataburger,whataburger.com
+Zaxby's,zaxbys.com
+Raising Cane's,raisingcanes.com
+Wingstop,wingstop.com
+Panera Bread,panerabread.com
+Chipotle,chipotle.com
+Panda Express,pandaexpress.com
+IHOP,ihop.com
+Denny's,dennys.com
+Waffle House,wafflehouse.com
+Olive Garden,olivegarden.com
+Chili's,chilis.com
+Applebee's,applebees.com
+Outback Steakhouse,outback.com
+Texas Roadhouse,texasroadhouse.com
+Buffalo Wild Wings,buffalowildwings.com
+Cracker Barrel,crackerbarrel.com
+Golden Corral,goldencorral.com
+Rudy's BBQ,rudysbbq.com
+Buc-ee's,bucees.com
