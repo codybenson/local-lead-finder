@@ -104,7 +104,7 @@ def should_exclude(name: str, domain: str) -> bool:
 # ────────────────────────────────────────────────────────────────────────────────
 
 display_mode = st.radio(
-    "View mode", ["Table", "List (mobile-friendly)"], horizontal=True
+    "View mode", ["Desktop", "Mobile"], horizontal=True
 )
 
 # Helpers (grid & distance calculations)
