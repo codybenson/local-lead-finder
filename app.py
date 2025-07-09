@@ -114,7 +114,7 @@ if st.button("Search"):
             "Address": det.get("formatted_address",""),
             "Phone": det.get("formatted_phone_number",""),
             "Website": det.get("website",""),
-            "No Website?": "✅" if not det.get("website") else ""
+            "No Website?": not bool(det.get("website"))
         })
 
     df = pd.DataFrame(leads)
@@ -126,9 +126,11 @@ if st.button("Search"):
     if view == "Table":
         st.dataframe(df, use_container_width=True)
     else:
-        # List-style for mobile
+        # List-style for mobile with website status in parentheses
         for lead in leads:
-            with st.expander(lead["Name"]):
+            has_site = bool(lead["Website"])
+            label = f"{lead['Name']} ({'Has website' if has_site else 'No website'})"
+            with st.expander(label):
                 st.write("• Address:", lead["Address"])
                 st.write("• Phone:", lead["Phone"])
                 st.write("• Website:", lead["Website"] or "—")
