@@ -53,14 +53,61 @@ try:
             if val:
                 excluded.append(val)
 except FileNotFoundError:
-    st.warning("No exclusions file found (exclusions.txt) — proceeding without exclusions.")
+    st.warning("No exclusions file found (exclusions.txt) — proceeding without file-based exclusions.")
 
-# — Choose display mode
+# ─── Exclusion logic ───────────────────────────────────────────────────────────
+# static set of major chains you want to exclude
+MAJOR_CHAINS = {
+    "walmart.com", "samsclub.com", "target.com", "costco.com",
+    "homedepot.com", "lowes.com", "bestbuy.com", "kohls.com",
+    "tjmaxx.com", "marshalls.com", "rossstores.com", "burlington.com",
+    "biglots.com", "dollargeneral.com", "dollartree.com", "familydollar.com",
+    "aldi.us", "heb.com", "brookshires.com", "kroger.com", "albertsons.com",
+    "academy.com", "tractorsupply.com", "autozone.com", "oreillyauto.com",
+    "petsmart.com", "petco.com", "michaels.com", "hobbylobby.com",
+    "joann.com", "homegoods.com", "bedbathandbeyond.com", "bucees.com",
+    "mcdonalds.com", "burgerking.com", "wendys.com", "tacobell.com",
+    "pizzahut.com", "dominos.com", "papajohns.com", "littlecaesars.com",
+    "subway.com", "chick-fil-a.com", "kfc.com", "popeyes.com",
+    "starbucks.com", "dunkinathome.com", "dairyqueen.com", "sonicdrivein.com",
+    "whataburger.com", "zaxbys.com", "raisingcanes.com", "wingstop.com",
+    "panerabread.com", "chipotle.com", "pandaexpress.com", "ihop.com",
+    "dennys.com", "wafflehouse.com", "olivegarden.com", "chilis.com",
+    "applebees.com", "outback.com", "texasroadhouse.com",
+    "buffalowildwings.com", "crackerbarrel.com", "goldencorral.com", "rudysbbq.com"
+}
+
+def extract_domain(url: str) -> str:
+    """Grab the bare domain from a URL."""
+    try:
+        d = urlparse(url).netloc.lower()
+        return d.removeprefix("www.")
+    except:
+        return ""
+
+def is_major_chain(domain: str) -> bool:
+    return any(domain == chain or domain.endswith("." + chain) for chain in MAJOR_CHAINS)
+
+def is_gov(domain: str) -> bool:
+    # catches any domain containing .gov
+    return ".gov" in domain
+
+# combined check: file-list OR chain OR gov
+def should_exclude(name: str, domain: str) -> bool:
+    name_l = name.lower()
+    # file-based name or domain match
+    for ex in excluded:
+        if ex in name_l or ex in domain:
+            return True
+    # built-in chain or gov
+    return is_major_chain(domain) or is_gov(domain)
+# ────────────────────────────────────────────────────────────────────────────────
+
 display_mode = st.radio(
     "View mode", ["Table", "List (mobile-friendly)"], horizontal=True
 )
 
-# Helpers
+# Helpers (grid & distance calculations)
 def make_grid_centers(lat, lng, radius_m, divisions):
     m_lat = 111_000
     m_lng = 111_000 * math.cos(math.radians(lat))
@@ -135,9 +182,8 @@ if st.button("Search"):
         ).json().get("result", {})
         name = det.get("name", "").strip()
         website = det.get("website", "")
-        domain = urlparse(website).netloc.lower() if website else ""
-        # skip if any exclusion matches name or domain
-        if any(ex in name.lower() or ex in domain for ex in excluded):
+        domain = extract_domain(website)
+        if should_exclude(name, domain):
             continue
         leads.append({
             "Name": name,
