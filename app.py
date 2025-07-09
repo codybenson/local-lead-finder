@@ -28,7 +28,7 @@ st.markdown(
 st.title("Local Lead Finder")
 
 # — Inputs
-address   = st.text_input("Center address", "Commerce, TX")
+address   = st.text_input("City", "Commerce, TX")
 radius_mi = st.slider("Radius (miles)", 1, 50, 10)
 keyword   = st.text_input("Keyword", "")
 divisions = st.number_input(
@@ -129,7 +129,7 @@ if st.button("Search"):
         # List-style for mobile with website status in parentheses
         for lead in leads:
             has_site = bool(lead["Website"])
-            label = f"{lead['Name']} ({'Has website' if has_site else 'No website'})"
+            label = f"{lead['Name']} ({'SEO Prospect' if has_site else 'Website Prospect'})"
             with st.expander(label):
                 st.write("• Address:", lead["Address"])
                 st.write("• Phone:", lead["Phone"])
