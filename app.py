@@ -6,26 +6,24 @@ import pandas as pd
 import streamlit as st
 from urllib.parse import urlparse
 
-# — Secret check
+# - Secret check
 if "GCP_API_KEY" not in st.secrets:
     st.error("⚠️ Please add GCP_API_KEY in Settings → Secrets")
     st.stop()
 API_KEY = st.secrets["GCP_API_KEY"]
 
-# — Page config
+# - Page config
 st.set_page_config(
     page_title="Local Lead Finder",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# — Inject mobile-friendly CSS
+# - Inject mobile-friendly CSS
 st.markdown(
     """
     <style>
-      /* Make the dataframe container scrollable horizontally */
       .stDataFrame > div { overflow-x: auto; }
-      /* Tighten up padding so it fits more on a small screen */
       .streamlit-table td, .streamlit-table th { padding: 4px 8px; }
     </style>
     """,
@@ -34,7 +32,7 @@ st.markdown(
 
 st.title("Local Lead Finder")
 
-# — Inputs
+# - Inputs
 address   = st.text_input("City or address", "Commerce, TX")
 radius_mi = st.slider("Radius (miles)", 1, 50, 10)
 keyword   = st.text_input("Keyword (blank=all)", "")
@@ -44,7 +42,7 @@ divisions = st.number_input(
     help="1→60, 2→120, 3→180 max results"
 )
 
-# — Load exclusions (names or domains) from file
+# - Load exclusions (names or domains) from file
 excluded = []
 try:
     with open('exclusions.txt') as f:
@@ -55,8 +53,7 @@ try:
 except FileNotFoundError:
     st.warning("No exclusions file found (exclusions.txt) — proceeding without file-based exclusions.")
 
-# ─── Exclusion logic ───────────────────────────────────────────────────────────
-# static set of major chains you want to exclude
+# - Built-in exclusion logic
 MAJOR_CHAINS = {
     "walmart.com", "samsclub.com", "target.com", "costco.com",
     "homedepot.com", "lowes.com", "bestbuy.com", "kohls.com",
@@ -74,7 +71,8 @@ MAJOR_CHAINS = {
     "panerabread.com", "chipotle.com", "pandaexpress.com", "ihop.com",
     "dennys.com", "wafflehouse.com", "olivegarden.com", "chilis.com",
     "applebees.com", "outback.com", "texasroadhouse.com",
-    "buffalowildwings.com", "crackerbarrel.com", "goldencorral.com", "rudysbbq.com"
+    "buffalowildwings.com", "crackerbarrel.com", "goldencorral.com",
+    "rudysbbq.com"
 }
 
 def extract_domain(url: str) -> str:
@@ -86,28 +84,28 @@ def extract_domain(url: str) -> str:
         return ""
 
 def is_major_chain(domain: str) -> bool:
-    return any(domain == chain or domain.endswith("." + chain) for chain in MAJOR_CHAINS)
+    return any(domain == c or domain.endswith("." + c) for c in MAJOR_CHAINS)
 
 def is_gov(domain: str) -> bool:
-    # catches any domain containing .gov
     return ".gov" in domain
 
-# combined check: file-list OR chain OR gov
+def is_org(domain: str) -> bool:
+    return ".org" in domain
+
 def should_exclude(name: str, domain: str) -> bool:
     name_l = name.lower()
     # file-based name or domain match
     for ex in excluded:
         if ex in name_l or ex in domain:
             return True
-    # built-in chain or gov
-    return is_major_chain(domain) or is_gov(domain)
-# ────────────────────────────────────────────────────────────────────────────────
+    # built-in chain, gov, or org
+    return is_major_chain(domain) or is_gov(domain) or is_org(domain)
 
 display_mode = st.radio(
     "View mode", ["Table", "List (mobile-friendly)"], horizontal=True
 )
 
-# Helpers (grid & distance calculations)
+# - Helpers for tiling and distance
 def make_grid_centers(lat, lng, radius_m, divisions):
     m_lat = 111_000
     m_lng = 111_000 * math.cos(math.radians(lat))
@@ -124,11 +122,11 @@ def haversine(lat1, lon1, lat2, lon2):
     φ1, φ2 = math.radians(lat1), math.radians(lat2)
     dφ = math.radians(lat2 - lat1)
     dλ = math.radians(lon2 - lon1)
-    a = math.sin(dφ / 2)**2 + math.cos(φ1) * math.cos(φ2) * math.sin(dλ / 2)**2
+    a = math.sin(dφ/2)**2 + math.cos(φ1)*math.cos(φ2)*math.sin(dλ/2)**2
     return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
 if st.button("Search"):
-    # 1) Geocode center
+    # 1) Geocode center point
     geo = requests.get(
         "https://maps.googleapis.com/maps/api/geocode/json",
         params={"address": address, "key": API_KEY}
@@ -136,7 +134,7 @@ if st.button("Search"):
     lat, lng = geo["lat"], geo["lng"]
     radius_m = int(radius_mi * 1609.34)
 
-    # 2) Multi-center Nearby Search
+    # 2) Tile-based nearby search
     centers = make_grid_centers(lat, lng, radius_m, divisions)
     raw_results = []
     for lat_c, lng_c in centers:
@@ -158,7 +156,7 @@ if st.button("Search"):
                 break
             time.sleep(2)
 
-    # 3) De-dupe & filter back to circle
+    # 3) Dedupe & enforce exact circle
     unique = {p["place_id"]: p for p in raw_results}.values()
     filtered = [
         p for p in unique
@@ -193,7 +191,7 @@ if st.button("Search"):
             "Type": "SEO Prospect" if website else "Website Prospect"
         })
 
-    # 5) Display results
+    # 5) Display & download
     df = pd.DataFrame(leads)
     st.success(f"Found {len(df)} businesses after exclusions")
     st.download_button(
